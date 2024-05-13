@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>在线表格</title>
+    <link rel='stylesheet' href='/static/css/pluginsCss.css'/>
+    <link rel='stylesheet' href='/static/css/plugins.css'/>
+    <link rel='stylesheet' href='/static/css/luckysheet.css'/>
+    <link rel='stylesheet' href='/static/css/iconfont.css'/>
+    <script src="/static/js/plugin.js"></script>
+    <script src="/static/js/luckysheet.umd.js"></script>
+</head>
+<body>
+<div id="lucky" style="margin:0px;padding:0px;position:absolute;width:100%;height:100%;left: 0px;top: 20px;"></div>
+</body>
+<script>
+var options = {
+  container: 'lucky',
+  title: "测试日志",
+  lang: 'zh',
+  showinfobar: true, // 标题部分信息
+  showsheetbar: false, // 底部sheet页
+  sheetFormulaBar: true, // 是否显示公示栏
+  showtoolbarConfig: { // 自定义配置工具栏
+      undoRedo: true, // 撤销重做，注意撤消重做是两个按钮，由这一个配置决定显示还是隐藏
+      paintFormat: true, // 格式刷
+      mergeCell: true // '合并单元格'
+  },
+  allowUpdate: true,
+  loadUrl: "/luckysheet/api/loadUrl",
+  updateUrl: `ws://${document.location.host}/luckysheet/api/updateUrl`,
+  functionButton: '<button id="" class="btn btn-primary btn-danger" style=" padding:3px 6px; font-size: 12px; margin-right: 85px;" onclick="testlog()">日志</button>',
+}
+$(function () {luckysheet.create(options)})
+
+function testlog() {console.log(luckysheet.getAllSheets()[0])}
+
+$(window).bind('unload', function() {
+   $.ajax({
+       url: 'http://127.0.0.1:5000/test',
+       method: 'POST',
+       data: {exportdata: JSON.stringify(luckysheet.getAllSheets()[0])},
+       });
+})
+setInterval(function(){
+	$.ajax({
+        url: 'http://127.0.0.1:5000/test',
+       method: 'POST',
+       data: {exportdata: JSON.stringify(luckysheet.getAllSheets()[0])},
+		});
+}, 1000);
+</script>
+</html>
